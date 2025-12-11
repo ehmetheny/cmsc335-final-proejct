@@ -1,20 +1,13 @@
 **Submitted by:** 
 
-**Group Members:**  
-Erica Metheny (emetheny)
+**Group Members:** Erica Metheny (emetheny)
 
-**App Description:**  
-A short one- or two-sentence description of what your app does.
+**App Description:**  Allows users to place orders for flowers, see past orders, and see flower prices in different currencies.
 
-**YouTube Video Link:**  
-https://www.youtube.com/your-video-here
+**YouTube Video Link:**  https://www.youtube.com/your-video-here
 
 **APIs Used:**  
-- API Name 1 — https://link-to-api-1  
-- API Name 2 — https://link-to-api-2  
 
 **Contact Email:**  
-ematheny@umd.edu
 
-**Deployed App Link:**  
-https://your-render-deployment-link
+**Deployed App Link:**  https://your-render-deployment-link
