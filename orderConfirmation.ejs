@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ballet:opsz@16..72&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <h1>International Flowers</h1>
+        <nav>
+            <a href="/index">FLOWERS</a>
+            <a href="/buy">BUY</a>
+            <a href="/orders">ORDERS</a>
+        </nav>
+    </header>
+    
+    <table class="orders">
+        <th><h2>Order Confirmation</h2></th>
+
+        <tbody id="order-confirmation">
+            <tr><td>E-MAIL ADDRESS<strong><%- email %></strong></td></tr>
+            <tr><td>PHONE NUMBER<strong><%- phone %></strong></td></tr>
+            <tr><td>NAME<strong><%- name %></strong></td></tr>
+            <tr><td>ADDRESS<strong><%- address %></strong></td></tr>
+            <tr><td>COUNTRY<strong><%- country %></strong></td></tr>
+            <tr><td>FLOWERS<strong><%- flowers %></strong></td></tr>
+            <tr><td>TOTAL<strong><%- total %></strong></td></tr>
+        </tbody>
+    </table>
+</body>
+
+</html>

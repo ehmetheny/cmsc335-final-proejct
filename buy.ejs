@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ballet:opsz@16..72&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <h1>International Flowers</h1>
+        <nav>
+            <a href="/index">FLOWERS</a>
+            <a href="/buy">BUY</a>
+            <a href="/orders">ORDERS</a>
+        </nav>
+    </header>
+    
+    <form id="order-form" action="/buy" method="post">
+        <h2>Order Flowers</h2>
+        <fieldset>
+            <legend><strong>CONTACT INFORMATION</strong></legend>
+            <input id="email" name="email" type="email" placeholder="e-mail address" autofocus required>
+            <br><br>
+            <input id="phone" name="phone" type="text" placeholder="phone number" required>
+            <br>
+        </fieldset><br>
+
+        <fieldset>
+            <legend><strong>SHIPPING ADDRESS</strong></legend>
+            <input id="name" name="name" type="text" placeholder="name" required>
+            <br><br>
+            <input id="address" name="address" type="text" placeholder="address" required>
+            <br><br>
+            <input id="country" name="country" type="text" placeholder="country"required>
+            <br>
+        </fieldset><br>
+
+        <fieldset>
+            <legend><strong>FLOWERS</strong></legend>
+            <label for="gw-order">Australian Golden Wattle ($10)</label>
+            <input id="gw-order" name="gwOrder" type="number" min="0" value="0" required>
+            <br><br>
+            <label for="iris-order">French Iris ($12)</label>
+            <input id="iris-order" name="irisOrder" type="number" min="0" value="0" required>
+            <br><br>
+            <label for="lotus-order">Indian Lotus ($5)</label>
+            <input id="lotus-order" name="lotusOrder" type="number" min="0" value="0" required>
+            <br><br>
+            <label for="cb-order">Japanese Cherry Blossom ($18)</label>
+            <input id="cb-order" name="cbOrder" type="number" min="0" value="0" required>
+            <br><br>
+            <label for="jasmine-order">Tunisian Jasmine ($22)</label>
+            <input id="jasmine-order" name="jasmineOrder" type="number" min="0" value="0" required>
+            <br><br>
+            <label for="sunflower-order">Ukranian Sunflower ($8)</label>
+            <input id="sunflower-order" name="sunflowerOrder" type="number" min="0" value="0" required>
+            <br>
+        </fieldset><br>
+
+        <div id="button-container">
+            <input type="reset" value="CLEAR">
+            <input type="submit" value="PLACE ORDER">
+        </div>
+    </form>
+    <br><br>
+</body>
+
+</html>

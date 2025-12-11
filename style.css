@@ -1,0 +1,125 @@
+body {
+    font-family: Quicksand;
+    margin: 0;
+    margin-top: 0;
+}
+
+header {
+    background-color: black;
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-family: Ballet;
+    margin: 0;
+    padding: 20px;
+    font-size: 50px;
+    text-align: center;
+}
+
+nav {
+    display: flex;
+    justify-content: center; 
+    gap: 20px;               
+}
+
+nav a {
+    text-decoration: none;      
+    color: white;              
+    padding: 16px;   
+    padding-top: 0;     
+    font-size: 20px; 
+}
+
+nav a:hover {   
+    color: #CCCCFF;               
+}
+
+form h2 {
+    text-align: center;
+}
+
+input[type="text"], input[type="email"], input[type="number"] {
+    font: inherit;           
+    padding: 2px 6px;         
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input[type="number"] {
+    float: right;
+}
+
+input[type="submit"] {
+    background-color: black;
+    border: 1px solid black; 
+    font: inherit;
+    font-weight: 5;
+    color: white;
+    margin: 10px;
+}
+
+input[type="reset"] {
+    background-color: white;
+    border: 1px solid black; 
+    font: inherit;
+    font-weight: 5;
+    color: black;
+    margin: 10px;
+}
+
+input[type="submit"]:hover, input[type="reset"]:hover  {
+    background-color: #CCCCFF;
+    color: black; 
+    border: 1px solid #CCCCFF; 
+}
+
+td img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+}
+
+td strong {
+    float: right;
+}
+
+.orders {
+    width: 90%;        
+    max-width: 700px;  
+    margin: 0 auto;    
+}
+
+.space {
+    height: 50px;
+}
+
+#button-container {
+    display: flex;
+    justify-content: center; 
+    gap: 10px;               
+}
+
+#order-form {
+    width: 90%;        
+    max-width: 700px;  
+    margin: 0 auto;    
+}
+
+#order-form input[type="text"], input[type="email"] {
+    width: 97%;
+}
+
+#flowers {
+    width: 100%;
+    table-layout: fixed;
+}
+
+#flowers td {
+    vertical-align: top;
+    padding: 50px;
+}
