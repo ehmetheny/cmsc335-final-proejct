@@ -55,14 +55,21 @@ app.get("/", (req, res) => {
     res.render("index", variables);
 }); 
 
+// Connect to api and update prices with currceny exchange
+// idk if api also provides currency symbols
 app.post("/", (req, res) => { 
-    res.render("index");
+    // const variables = {
+    //     gwPrice:  ,
+    //     irisPrice: ,
+    //     lotusPrice:  ,
+    //     cbPrice:  ,
+    //     jasminePrice:  ,
+    //     sunflowerPrice:  
+    // };
+    res.render("index", variables);
 }); 
 
-app.get("/buy", async (req, res) => { 
-    res.render("buy");
-});
-
+// needs completed so that order is posted to mongodb 
 app.post("/buy", async (req, res) => { 
     try {
         const orders = {gw: req.body.gwOrder, 
@@ -97,7 +104,7 @@ app.post("/buy", async (req, res) => {
         //     sunflower: orders.sunflower,
         //     total: total 
         // };
-        await collection.insertOne(application);
+        // await collection.insertOne(application);
         res.render("orderConfirmation", variables);
     } catch (e) {
         console.error(e);
@@ -106,29 +113,30 @@ app.post("/buy", async (req, res) => {
     }
 });
 
+// needs completed so that every order is read from mongo and displayed
 app.get("/orders", async (req, res) => { 
     try {
-        await client.connect();
-        const docs = await collection.find().toArray();
+        // await client.connect();
+        // const docs = await collection.find().toArray();
         let tableBody = "";
         
-        docs.forEach((order) => {
-            const orders = {gw: order.gw, 
-                            iris: order.iris, 
-                            lotus: order.lotus, 
-                            cb: order.cb, 
-                            jasmine: order.jasmine, 
-                            sunflower: order.sunflower};
-            tableBody += `<tr><td>DATE<strong>${order.date}</strong></td></tr>`;
-            tableBody += `<tr><td>E-MAIL ADDRESS<strong>${order.email}</strong></td></tr>`;
-            tableBody += `<tr><td>PHONE NUMBER<strong>${order.phone}</strong></td></tr>`;
-            tableBody += `<tr><td>NAME<strong>${order.name}</strong></td></tr>`;
-            tableBody += `<tr><td>ADDRESS<strong>${order.address}</strong></td></tr>`;
-            tableBody += `<tr><td>COUNTRY<strong>${order.country}</strong></td></tr>`;
-            tableBody += `<tr><td>FLOWERS<strong>${getFlowers(orders)}</strong></td></tr>`;
-            tableBody += `<tr><td>TOTAL<strong>${order.total}</strong></td></tr>`;
-            tableBody += `<tr class="space"><td></td></tr>`;
-        });
+        // docs.forEach((order) => {
+        //     const orders = {gw: order.gw, 
+        //                     iris: order.iris, 
+        //                     lotus: order.lotus, 
+        //                     cb: order.cb, 
+        //                     jasmine: order.jasmine, 
+        //                     sunflower: order.sunflower};
+        //     tableBody += `<tr><td>DATE<strong>${order.date}</strong></td></tr>`;
+        //     tableBody += `<tr><td>E-MAIL ADDRESS<strong>${order.email}</strong></td></tr>`;
+        //     tableBody += `<tr><td>PHONE NUMBER<strong>${order.phone}</strong></td></tr>`;
+        //     tableBody += `<tr><td>NAME<strong>${order.name}</strong></td></tr>`;
+        //     tableBody += `<tr><td>ADDRESS<strong>${order.address}</strong></td></tr>`;
+        //     tableBody += `<tr><td>COUNTRY<strong>${order.country}</strong></td></tr>`;
+        //     tableBody += `<tr><td>FLOWERS<strong>${getFlowers(orders)}</strong></td></tr>`;
+        //     tableBody += `<tr><td>TOTAL<strong>${order.total}</strong></td></tr>`;
+        //     tableBody += `<tr class="space"><td></td></tr>`;
+        // });
         res.render("orders", { tbody: tableBody });
     } catch (e) {
         console.error(e);
