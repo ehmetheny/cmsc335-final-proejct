@@ -57,7 +57,9 @@ app.get("/", (req, res) => {
 
 // Connect to api and update prices with currceny exchange
 // idk if api also provides currency symbols
+// show error message is country isnt in api
 app.post("/", (req, res) => { 
+    const country = req.body.country;
     // const variables = {
     //     gwPrice:  ,
     //     irisPrice: ,
