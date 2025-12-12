@@ -154,7 +154,7 @@ app.post("/index", async (req, res) => {
 
 // Buy page - shows order form
 app.get("/buy", (req, res) => {
-    res.render("buy");
+    res.redirecr("/buy");
 });
 
 // needs completed so that order is posted to mongodb 
