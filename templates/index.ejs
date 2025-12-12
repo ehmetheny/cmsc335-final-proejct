@@ -20,9 +20,26 @@
         </nav>
     </header>
 
-    <form action="/index" method="post">
-        <h2>I am shopping from <input type="text" name="country" value="USA" size="15"><input type="submit" value="GO"></h2>
-    </form>
+<form action="/index" method="post">
+    <h2>I am shopping from 
+        <select name="country">
+            <option value="USA" selected>USA</option>
+            <option value="UK">UK</option>
+            <option value="Japan">Japan</option>
+            <option value="India">India</option>
+            <option value="Australia">Australia</option>
+            <option value="Canada">Canada</option>
+            <option value="Germany">Germany</option>
+            <option value="France">France</option>
+            <option value="Spain">Spain</option>
+            <option value="Italy">Italy</option>
+            <option value="China">China</option>
+            <option value="Mexico">Mexico</option>
+            <option value="Brazil">Brazil</option>
+        </select>
+        <input type="submit" value="GO">
+    </h2>
+</form>
 
     <table id="flowers">
         <tr>
