@@ -1,4 +1,4 @@
-//require("dotenv").config({ quiet: true });
+require("dotenv").config({ quiet: true });
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const express = require("express");
 const app = express(); 
@@ -24,6 +24,64 @@ function getFlowers(orders) {
     return flowers.join(", ");
 }
 
+const countryCurrencies = {
+    'USA': 'USD',
+    'UK': 'GBP',
+    'Japan': 'JPY',
+    'India': 'INR',
+    'Australia': 'AUD',
+    'Canada': 'CAD',
+    'Germany': 'EUR',
+    'France': 'EUR',
+    'Spain': 'EUR',
+    'Italy': 'EUR',
+    'China': 'CNY',
+    'Mexico': 'MXN',
+    'Brazil': 'BRL'
+};
+
+function getCurrencySymbol(currency) {
+    const symbols = {
+        'USD': '$',
+        'GBP': '£',
+        'EUR': '€',
+        'JPY': '¥',
+        'INR': '₹',
+        'AUD': 'A$',
+        'CAD': 'C$',
+        'CNY': '¥',
+        'MXN': '$',
+        'BRL': 'R$'
+    };
+    return symbols[currency] || '$';
+}
+
+async function getExchangeRate(country) {
+    try {
+        const currency = countryCurrencies[country];
+        
+        if (!currency) {
+            throw new Error(`Country "${country}" not supported`);
+        }
+        
+        const response = await fetch(`https://api.exchangerate-api.com/v4/latest/USD`);
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch exchange rates');
+        }
+        
+        const data = await response.json();
+        
+        return {
+            rate: data.rates[currency] || 1,
+            currency: currency,
+            symbol: getCurrencySymbol(currency)
+        };
+    } catch (error) {
+        console.error('Error fetching exchange rate:', error);
+        return { rate: 1, currency: 'USD', symbol: '$', error: error.message };
+    }
+}
 function getTotal(orders) {
     const {gw, iris, lotus, cb, jasmine, sunflower} = orders;
     let total = 0;
@@ -39,11 +97,17 @@ function getTotal(orders) {
 process.stdin.setEncoding("utf8");
 
 app.use(bodyParser.urlencoded( { extended: false } ));
+app.use(express.static(path.resolve(__dirname)));
+
 
 app.set("view engine", "ejs");
 app.set("views", path.resolve(__dirname, "templates"));
 
 app.get("/", (req, res) => { 
+    res.redirect("/index");
+}); 
+
+app.get("/index", (req, res) => { 
     const variables = {
         gwPrice: `$${prices.gw}`,
         irisPrice: `$${prices.iris}`,
@@ -55,21 +119,43 @@ app.get("/", (req, res) => {
     res.render("index", variables);
 }); 
 
-// Connect to api and update prices with currceny exchange
-// idk if api also provides currency symbols
-// show error message is country isnt in api
-app.post("/", (req, res) => { 
+app.post("/index", async (req, res) => { 
     const country = req.body.country;
-    // const variables = {
-    //     gwPrice:  ,
-    //     irisPrice: ,
-    //     lotusPrice:  ,
-    //     cbPrice:  ,
-    //     jasminePrice:  ,
-    //     sunflowerPrice:  
-    // };
+    
+    // Get exchange rate for the selected country
+    const exchangeInfo = await getExchangeRate(country);
+    
+    // Check if country is not supported or API error
+    if (exchangeInfo.error) {
+        const variables = {
+            gwPrice: `$${prices.gw}`,
+            irisPrice: `$${prices.iris}`,
+            lotusPrice: `$${prices.lotus}`,
+            cbPrice: `$${prices.cb}`,
+            jasminePrice: `$${prices.jasmine}`,
+            sunflowerPrice: `$${prices.sunflower}`,
+            errorMessage: `Error: ${exchangeInfo.error}. Showing prices in USD.`
+        };
+        res.render("index", variables);
+        return;
+    }
+    
+    // Convert prices to local currency
+    const variables = {
+        gwPrice: `${exchangeInfo.symbol}${(prices.gw * exchangeInfo.rate).toFixed(2)}`,
+        irisPrice: `${exchangeInfo.symbol}${(prices.iris * exchangeInfo.rate).toFixed(2)}`,
+        lotusPrice: `${exchangeInfo.symbol}${(prices.lotus * exchangeInfo.rate).toFixed(2)}`,
+        cbPrice: `${exchangeInfo.symbol}${(prices.cb * exchangeInfo.rate).toFixed(2)}`,
+        jasminePrice: `${exchangeInfo.symbol}${(prices.jasmine * exchangeInfo.rate).toFixed(2)}`,
+        sunflowerPrice: `${exchangeInfo.symbol}${(prices.sunflower * exchangeInfo.rate).toFixed(2)}`
+    };
     res.render("index", variables);
 }); 
+
+// Buy page - shows order form
+app.get("/buy", (req, res) => {
+    res.render("buy");
+});
 
 // needs completed so that order is posted to mongodb 
 app.post("/buy", async (req, res) => { 
@@ -85,8 +171,8 @@ app.post("/buy", async (req, res) => {
             email: req.body.email,
             phone: req.body.phone,
             name: req.body.name,
-            address: req.body.name,
-            country: req.body.name,
+            address: req.body.address,
+            country: req.body.country,
             flowers: getFlowers(orders),
             total: total
         };
