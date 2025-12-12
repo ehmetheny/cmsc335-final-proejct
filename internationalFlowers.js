@@ -4,6 +4,7 @@ const express = require("express");
 const app = express(); 
 const path = require("path");
 const bodyParser = require("body-parser");
+const { StringDecoder } = require("string_decoder");
 const portNumber = process.argv[2];
 const uri = process.env.MONGO_CONNECTION_STRING;
 const client = new MongoClient(uri, { serverApi: ServerApiVersion.v1 });
@@ -124,7 +125,7 @@ app.post("/index", async (req, res) => {
     
     // Get exchange rate for the selected country
     const exchangeInfo = await getExchangeRate(country);
-    
+
     // Check if country is not supported or API error
     if (exchangeInfo.error) {
         const variables = {
@@ -153,8 +154,23 @@ app.post("/index", async (req, res) => {
 }); 
 
 // Buy page - shows order form
-app.get("/buy", (req, res) => {
-    res.redirecr("/buy");
+app.get("/buy", async (req, res) => {;
+    const country = req.query.country || 'USA';
+    
+    const exchangeInfo = await getExchangeRate(country);
+    
+    // Needs fixing: Updating buy pages currency options to the user selected currency 
+    /*const variables = {
+        gwPrice: `${exchangeInfo.symbol}${(prices.gw * exchangeInfo.rate).toFixed(2)}`,
+        irisPrice: `${exchangeInfo.symbol}${(prices.iris * exchangeInfo.rate).toFixed(2)}`,
+        lotusPrice: `${exchangeInfo.symbol}${(prices.lotus * exchangeInfo.rate).toFixed(2)}`,
+        cbPrice: `${exchangeInfo.symbol}${(prices.cb * exchangeInfo.rate).toFixed(2)}`,
+        jasminePrice: `${exchangeInfo.symbol}${(prices.jasmine * exchangeInfo.rate).toFixed(2)}`,
+        sunflowerPrice: `${exchangeInfo.symbol}${(prices.sunflower * exchangeInfo.rate).toFixed(2)}`,
+        selectedCountry: country, 
+        errorMessage: exchangeInfo.error ? `Currency conversion failed for ${country}. Displaying prices in USD.` : null
+    };*/
+    res.render("buy");
 });
 
 // needs completed so that order is posted to mongodb 
@@ -176,26 +192,26 @@ app.post("/buy", async (req, res) => {
             flowers: getFlowers(orders),
             total: total
         };
-        // await client.connect();
-        // const order = { 
-        //     date: ,
-        //     email: variables.email,
-        //     phone: variables.phone,
-        //     name: variables.name,
-        //     address: variables.name,
-        //     country: variables.name,
-        //     gw: orders.gw, 
-        //     iris: orders.iris, 
-        //     lotus: orders.lotus, 
-        //     cb: orders.cb, 
-        //     jasmine: orders.jasmine, 
-        //     sunflower: orders.sunflower,
-        //     total: total 
-        // };
-        // await collection.insertOne(application);
+         await client.connect();
+         const order = { 
+            date: new Date().toLocaleString(),
+            email: variables.email,
+            phone: variables.phone,
+            name: variables.name,
+            address: variables.address,
+            country: variables.country,
+            gw: orders.gw, 
+            iris: orders.iris, 
+            lotus: orders.lotus, 
+            cb: orders.cb, 
+            jasmine: orders.jasmine, 
+            sunflower: orders.sunflower,
+            total: total 
+        };
+        await collection.insertOne(order);
         res.render("orderConfirmation", variables);
     } catch (e) {
-        console.error(e);
+        console.error("Error in /buy post:", e);
     } finally {
         await client.close();
     }
@@ -204,31 +220,31 @@ app.post("/buy", async (req, res) => {
 // needs completed so that every order is read from mongo and displayed
 app.get("/orders", async (req, res) => { 
     try {
-        // await client.connect();
-        // const docs = await collection.find().toArray();
+        await client.connect();
+        const docs = await collection.find().toArray();
         let tableBody = "";
 
         // please dont change html style :)
-        // docs.forEach((order) => {
-        //     const orders = {gw: order.gw, 
-        //                     iris: order.iris, 
-        //                     lotus: order.lotus, 
-        //                     cb: order.cb, 
-        //                     jasmine: order.jasmine, 
-        //                     sunflower: order.sunflower};
-        //     tableBody += `<tr><td>DATE<strong>${order.date}</strong></td></tr>`;
-        //     tableBody += `<tr><td>E-MAIL ADDRESS<strong>${order.email}</strong></td></tr>`;
-        //     tableBody += `<tr><td>PHONE NUMBER<strong>${order.phone}</strong></td></tr>`;
-        //     tableBody += `<tr><td>NAME<strong>${order.name}</strong></td></tr>`;
-        //     tableBody += `<tr><td>ADDRESS<strong>${order.address}</strong></td></tr>`;
-        //     tableBody += `<tr><td>COUNTRY<strong>${order.country}</strong></td></tr>`;
-        //     tableBody += `<tr><td>FLOWERS<strong>${getFlowers(orders)}</strong></td></tr>`;
-        //     tableBody += `<tr><td>TOTAL<strong>${order.total}</strong></td></tr>`;
-        //     tableBody += `<tr class="space"><td></td></tr>`;
-        // });
+        docs.forEach((order) => {
+             const orders = {gw: order.gw, 
+                            iris: order.iris, 
+                            lotus: order.lotus, 
+                            cb: order.cb, 
+                            jasmine: order.jasmine, 
+                            sunflower: order.sunflower};
+            tableBody += `<tr><td>DATE<strong>${order.date}</strong></td></tr>`;
+            tableBody += `<tr><td>E-MAIL ADDRESS<strong>${order.email}</strong></td></tr>`;
+            tableBody += `<tr><td>PHONE NUMBER<strong>${order.phone}</strong></td></tr>`;
+            tableBody += `<tr><td>NAME<strong>${order.name}</strong></td></tr>`;
+            tableBody += `<tr><td>ADDRESS<strong>${order.address}</strong></td></tr>`;
+            tableBody += `<tr><td>COUNTRY<strong>${order.country}</strong></td></tr>`;
+            tableBody += `<tr><td>FLOWERS<strong>${getFlowers(orders)}</strong></td></tr>`;
+            tableBody += `<tr><td>TOTAL<strong>${order.total}</strong></td></tr>`;
+            tableBody += `<tr class="space"><td></td></tr>`;
+        });
         res.render("orders", { tbody: tableBody });
     } catch (e) {
-        console.error(e);
+        console.error("Error in /orders get:", e);
     } finally {
         await client.close();
     }
