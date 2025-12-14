@@ -1,4 +1,4 @@
-require("dotenv").config({ quiet: true });
+// require("dotenv").config({ quiet: true });
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const express = require("express");
 const app = express(); 
@@ -158,15 +158,7 @@ app.post("/index", async (req, res) => {
 // Buy page - shows order form
 app.get("/buy", async (req, res) => {
 
-    const variables = {
-        gwPrice: `$${prices.gw}`,
-        irisPrice: `$${prices.iris}`,
-        lotusPrice: `$${prices.lotus}`,
-        cbPrice: `$${prices.cb}`,
-        jasminePrice: `$${prices.jasmine}`,
-        sunflowerPrice: `$${prices.sunflower}`
-    };
-    res.render("buy", variables);
+    res.render("buy");
 });
 
 app.post("/buy", async (req, res) => { 
