@@ -5,26 +5,12 @@ const app = express();
 const path = require("path");
 const bodyParser = require("body-parser");
 const { StringDecoder } = require("string_decoder");
-const portNumber = process.argv[2];
+const portNumber = 5001;
 const uri = process.env.MONGO_CONNECTION_STRING;
 const client = new MongoClient(uri, { serverApi: ServerApiVersion.v1 });
 const database = client.db("CMSC335DB");
 const collection = database.collection("flowerOrders");
 const prices = {gw: 10, iris: 12, lotus: 5, cb: 18, jasmine: 22, sunflower: 8};
-
-function getFlowers(orders) {
-    const {gw, iris, lotus, cb, jasmine, sunflower} = orders;
-    let flowers = [];
-    if (gw != 0) flowers.push(`Golden Wattle (${gw}x)`);
-    if (iris != 0) flowers.push(`Iris (${iris}x)`);
-    if (lotus != 0) flowers.push(`Lotus (${lotus}x)`);
-    if (cb != 0) flowers.push(`Cherry Blossom (${cb}x)`);
-    if (jasmine != 0) flowers.push(`Jasmine(${jasmine}x)`);
-    if (sunflower != 0) flowers.push(`Sunflower (${sunflower}x)`);
-
-    return flowers.join(", ");
-}
-
 const countryCurrencies = {
     'USA': 'USD',
     'UK': 'GBP',
@@ -40,22 +26,6 @@ const countryCurrencies = {
     'Mexico': 'MXN',
     'Brazil': 'BRL'
 };
-
-function getCurrencySymbol(currency) {
-    const symbols = {
-        'USD': '$',
-        'GBP': '£',
-        'EUR': '€',
-        'JPY': '¥',
-        'INR': '₹',
-        'AUD': 'A$',
-        'CAD': 'C$',
-        'CNY': '¥',
-        'MXN': '$',
-        'BRL': 'R$'
-    };
-    return symbols[currency] || '$';
-}
 
 async function getExchangeRate(country) {
     try {
@@ -83,6 +53,36 @@ async function getExchangeRate(country) {
         return { rate: 1, currency: 'USD', symbol: '$', error: error.message };
     }
 }
+
+function getCurrencySymbol(currency) {
+    const symbols = {
+        'USD': '$',
+        'GBP': '£',
+        'EUR': '€',
+        'JPY': '¥',
+        'INR': '₹',
+        'AUD': 'A$',
+        'CAD': 'C$',
+        'CNY': '¥',
+        'MXN': '$',
+        'BRL': 'R$'
+    };
+    return symbols[currency] || '$';
+}
+
+function getFlowers(orders) {
+    const {gw, iris, lotus, cb, jasmine, sunflower} = orders;
+    let flowers = [];
+    if (gw != 0) flowers.push(`Golden Wattle (${gw}x)`);
+    if (iris != 0) flowers.push(`Iris (${iris}x)`);
+    if (lotus != 0) flowers.push(`Lotus (${lotus}x)`);
+    if (cb != 0) flowers.push(`Cherry Blossom (${cb}x)`);
+    if (jasmine != 0) flowers.push(`Jasmine(${jasmine}x)`);
+    if (sunflower != 0) flowers.push(`Sunflower (${sunflower}x)`);
+
+    return flowers.join(", ");
+}
+
 function getTotal(orders, country) {
     const exchangeInfo = await getExchangeRate(country);
     const {gw, iris, lotus, cb, jasmine, sunflower} = orders;
