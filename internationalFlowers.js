@@ -1,4 +1,4 @@
-// require("dotenv").config({ quiet: true });
+require("dotenv").config({ quiet: true });
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const express = require("express");
 const app = express(); 
@@ -83,17 +83,18 @@ function getFlowers(orders) {
     return flowers.join(", ");
 }
 
-function getTotal(orders, country) {
+async function getTotal(orders, country) {
     const exchangeInfo = await getExchangeRate(country);
     const {gw, iris, lotus, cb, jasmine, sunflower} = orders;
     let total = exchangeInfo.symbol;
-    total += gw * prices.gw * exchangeInfo.rate;
-    total += iris * prices.iris * exchangeInfo.rate;
-    total += lotus * prices.lotus * exchangeInfo.rate;
-    total += cb * prices.cb * exchangeInfo.rate;
-    total += jasmine * prices.jasmine * exchangeInfo.rate;
-    total += sunflower * prices.sunflower * exchangeInfo.rate;
-    return total;
+    let nTotal = 0;
+    nTotal += gw * prices.gw * exchangeInfo.rate;
+    nTotal += iris * prices.iris * exchangeInfo.rate;
+    nTotal += lotus * prices.lotus * exchangeInfo.rate;
+    nTotal += cb * prices.cb * exchangeInfo.rate;
+    nTotal += jasmine * prices.jasmine * exchangeInfo.rate;
+    nTotal += sunflower * prices.sunflower * exchangeInfo.rate;
+    return total + nTotal;
 }
 
 process.stdin.setEncoding("utf8");
@@ -156,7 +157,16 @@ app.post("/index", async (req, res) => {
 
 // Buy page - shows order form
 app.get("/buy", async (req, res) => {
-    res.redirect("/buy");
+
+    const variables = {
+        gwPrice: `$${prices.gw}`,
+        irisPrice: `$${prices.iris}`,
+        lotusPrice: `$${prices.lotus}`,
+        cbPrice: `$${prices.cb}`,
+        jasminePrice: `$${prices.jasmine}`,
+        sunflowerPrice: `$${prices.sunflower}`
+    };
+    res.render("buy", variables);
 });
 
 app.post("/buy", async (req, res) => { 
@@ -168,7 +178,7 @@ app.post("/buy", async (req, res) => {
                         jasmine: req.body.jasmineOrder, 
                         sunflower: req.body.sunflowerOrder};
         const country = req.body.country;
-        const total = getTotal(orders, country);
+        const total = await getTotal(orders, country);
         const variables = {
             email: req.body.email,
             phone: req.body.phone,
@@ -194,6 +204,7 @@ app.post("/buy", async (req, res) => {
             sunflower: orders.sunflower,
             total: total 
         };
+
         await collection.insertOne(order);
         res.render("orderConfirmation", variables);
     } catch (e) {
