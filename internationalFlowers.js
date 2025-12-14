@@ -1,4 +1,4 @@
-// require("dotenv").config({ quiet: true });
+require("dotenv").config({ quiet: true });
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const express = require("express");
 const app = express(); 
