@@ -1,4 +1,4 @@
-require("dotenv").config({ quiet: true });
+// require("dotenv").config({ quiet: true });
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const express = require("express");
 const app = express(); 
@@ -83,15 +83,16 @@ async function getExchangeRate(country) {
         return { rate: 1, currency: 'USD', symbol: '$', error: error.message };
     }
 }
-function getTotal(orders) {
+function getTotal(orders, country) {
+    const exchangeInfo = await getExchangeRate(country);
     const {gw, iris, lotus, cb, jasmine, sunflower} = orders;
-    let total = 0;
-    total += gw * prices.gw;
-    total += iris * prices.iris;
-    total += lotus * prices.lotus;
-    total += cb * prices.cb;
-    total += jasmine * prices.jasmine;
-    total += sunflower * prices.sunflower;
+    let total = exchangeInfo.symbol;
+    total += gw * prices.gw * exchangeInfo.rate;
+    total += iris * prices.iris * exchangeInfo.rate;
+    total += lotus * prices.lotus * exchangeInfo.rate;
+    total += cb * prices.cb * exchangeInfo.rate;
+    total += jasmine * prices.jasmine * exchangeInfo.rate;
+    total += sunflower * prices.sunflower * exchangeInfo.rate;
     return total;
 }
 
@@ -154,26 +155,10 @@ app.post("/index", async (req, res) => {
 }); 
 
 // Buy page - shows order form
-app.get("/buy", async (req, res) => {;
-    const country = req.query.country || 'USA';
-    
-    const exchangeInfo = await getExchangeRate(country);
-    
-    // Needs fixing: Updating buy pages currency options to the user selected currency 
-    /*const variables = {
-        gwPrice: `${exchangeInfo.symbol}${(prices.gw * exchangeInfo.rate).toFixed(2)}`,
-        irisPrice: `${exchangeInfo.symbol}${(prices.iris * exchangeInfo.rate).toFixed(2)}`,
-        lotusPrice: `${exchangeInfo.symbol}${(prices.lotus * exchangeInfo.rate).toFixed(2)}`,
-        cbPrice: `${exchangeInfo.symbol}${(prices.cb * exchangeInfo.rate).toFixed(2)}`,
-        jasminePrice: `${exchangeInfo.symbol}${(prices.jasmine * exchangeInfo.rate).toFixed(2)}`,
-        sunflowerPrice: `${exchangeInfo.symbol}${(prices.sunflower * exchangeInfo.rate).toFixed(2)}`,
-        selectedCountry: country, 
-        errorMessage: exchangeInfo.error ? `Currency conversion failed for ${country}. Displaying prices in USD.` : null
-    };*/
-    res.render("buy");
+app.get("/buy", async (req, res) => {
+    res.redirect("/buy");
 });
 
-// needs completed so that order is posted to mongodb 
 app.post("/buy", async (req, res) => { 
     try {
         const orders = {gw: req.body.gwOrder, 
@@ -182,13 +167,14 @@ app.post("/buy", async (req, res) => {
                         cb: req.body.cbOrder, 
                         jasmine: req.body.jasmineOrder, 
                         sunflower: req.body.sunflowerOrder};
-        const total = getTotal(orders);
+        const country = req.body.country;
+        const total = getTotal(orders, country);
         const variables = {
             email: req.body.email,
             phone: req.body.phone,
             name: req.body.name,
             address: req.body.address,
-            country: req.body.country,
+            country: country,
             flowers: getFlowers(orders),
             total: total
         };
@@ -199,7 +185,7 @@ app.post("/buy", async (req, res) => {
             phone: variables.phone,
             name: variables.name,
             address: variables.address,
-            country: variables.country,
+            country: country,
             gw: orders.gw, 
             iris: orders.iris, 
             lotus: orders.lotus, 
@@ -217,7 +203,6 @@ app.post("/buy", async (req, res) => {
     }
 });
 
-// needs completed so that every order is read from mongo and displayed
 app.get("/orders", async (req, res) => { 
     try {
         await client.connect();
