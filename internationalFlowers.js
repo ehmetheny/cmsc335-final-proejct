@@ -199,57 +199,56 @@ app.get("/buy", async (req, res) => {
 });
 
 app.post("/buy", async (req, res) => {
-        (async () => {
-            try {
-                const orders = {
-                    gw: req.body.gwOrder,
-                    iris: req.body.irisOrder,
-                    lotus: req.body.lotusOrder,
-                    cb: req.body.cbOrder,
-                    jasmine: req.body.jasmineOrder,
-                    sunflower: req.body.sunflowerOrder
-                };
-                const country = req.body.country;
-                const total = await getTotal(orders, country);
-                const variables = {
-                    email: req.body.email,
-                    phone: req.body.phone,
-                    name: req.body.name,
-                    address: req.body.address,
-                    country: country,
-                    flowers: getFlowers(orders),
-                    total: total
-                };
+    (async () => {
+        try {
+            const orders = {
+                gw: req.body.gwOrder,
+                iris: req.body.irisOrder,
+                lotus: req.body.lotusOrder,
+                cb: req.body.cbOrder,
+                jasmine: req.body.jasmineOrder,
+                sunflower: req.body.sunflowerOrder
+            };
+            const country = req.body.country;
+            const total = await getTotal(orders, country);
+            const variables = {
+                email: req.body.email,
+                phone: req.body.phone,
+                name: req.body.name,
+                address: req.body.address,
+                country: country,
+                flowers: getFlowers(orders),
+                total: total
+            };
 
-                await mongoose.connect(process.env.MONGO_CONNECTION_STRING, { dbName: 'CMSC335DB' });
-                await Order.create({
-                    date: new Date(),
-                    email: variables.email,
-                    phone: variables.phone,
-                    name: variables.name,
-                    address: variables.address,
-                    country: country,
-                    gw: orders.gw,
-                    iris: orders.iris,
-                    lotus: orders.lotus,
-                    cb: orders.cb,
-                    jasmine: orders.jasmine,
-                    sunflower: orders.sunflower,
-                    total: total
-                });
+            await mongoose.connect(process.env.MONGO_CONNECTION_STRING, { dbName: 'CMSC335DB' });
+            await Order.create({
+                date: new Date(),
+                email: variables.email,
+                phone: variables.phone,
+                name: variables.name,
+                address: variables.address,
+                country: country,
+                gw: orders.gw,
+                iris: orders.iris,
+                lotus: orders.lotus,
+                cb: orders.cb,
+                jasmine: orders.jasmine,
+                sunflower: orders.sunflower,
+                total: total
+            });
 
-                res.render("orderConfirmation", variables);
+            res.render("orderConfirmation", variables);
 
-            } catch (err) {
-                console.error("Error in /buy post:", e);
-            } finally {
-                mongoose.disconnect();
-            }
-        })();
+        } catch (err) {
+            console.error("Error in /buy post:", e);
+        } finally {
+            mongoose.disconnect();
+        }
+    })();
 });
 
 module.exports = { getFlowers };
-
 
 app.listen(portNumber);
 console.log(`Web server started and running at http://localhost:${portNumber}`);
