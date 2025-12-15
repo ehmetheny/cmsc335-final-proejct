@@ -24,7 +24,7 @@ router.get("/", async (req, res) => {
                     jasmine: order.jasmine,
                     sunflower: order.sunflower
                 };
-                tableBody += `<tr><td>DATE<strong>${order.date.toLocaleString()}</strong></td></tr>`;
+                tableBody += `<tr><td>DATE<strong>${order.date.toLocaleString()} UTC</strong></td></tr>`;
                 tableBody += `<tr><td>E-MAIL ADDRESS<strong>${order.email}</strong></td></tr>`;
                 tableBody += `<tr><td>PHONE NUMBER<strong>${order.phone}</strong></td></tr>`;
                 tableBody += `<tr><td>NAME<strong>${order.name}</strong></td></tr>`;
