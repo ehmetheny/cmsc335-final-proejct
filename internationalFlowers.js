@@ -112,7 +112,7 @@ app.get("/", (req, res) => {
 
 app.get("/index", (req, res) => { 
     const variables = {
-        usa: "selected",
+        usa: 'selected',
         uk: '',
         japan: '',
         india: '',
@@ -136,7 +136,7 @@ app.get("/index", (req, res) => {
 }); 
 
 app.post("/index", async (req, res) => { 
-    const country = req.body.country;
+    let country = req.body.country;
     
     // Get exchange rate for the selected country
     const exchangeInfo = await getExchangeRate(country);
@@ -165,6 +165,7 @@ app.post("/index", async (req, res) => {
             sunflowerPrice: `$${prices.sunflower}`,
             errorMessage: `Error: ${exchangeInfo.error}. Showing prices in USD.`
         };
+        country = country.toLowerCase();
         variables.country = "selected";
         res.render("index", variables);
         return;
@@ -192,13 +193,13 @@ app.post("/index", async (req, res) => {
         jasminePrice: `${exchangeInfo.symbol}${(prices.jasmine * exchangeInfo.rate).toFixed(2)}`,
         sunflowerPrice: `${exchangeInfo.symbol}${(prices.sunflower * exchangeInfo.rate).toFixed(2)}`
     };
+    country = country.toLowerCase();
     variables.country = "selected";
     res.render("index", variables);
 }); 
 
 // Buy page - shows order form
 app.get("/buy", async (req, res) => {
-
     res.render("buy");
 });
 
