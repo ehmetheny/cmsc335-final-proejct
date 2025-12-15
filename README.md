@@ -6,7 +6,7 @@
 
 **YouTube Video Link:**  
 
-**APIs Used:**  https://www.exchangerate-api.com
+**APIs Used:**  Exchange Rate API (https://www.exchangerate-api.com)
 
 **Contact Email:**  emetheny@terpmail.umd.edu
 
