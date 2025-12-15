@@ -64,7 +64,7 @@ function getCurrencySymbol(currency) {
         'AUD': 'A$',
         'CAD': 'C$',
         'CNY': '¥',
-        'MXN': '$',
+        'MXN': 'MX$',
         'BRL': 'R$'
     };
     return symbols[currency] || '$';
