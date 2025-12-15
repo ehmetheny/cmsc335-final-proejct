@@ -86,15 +86,14 @@ function getFlowers(orders) {
 async function getTotal(orders, country) {
     const exchangeInfo = await getExchangeRate(country);
     const {gw, iris, lotus, cb, jasmine, sunflower} = orders;
-    let total = exchangeInfo.symbol;
-    let nTotal = 0;
+    let total = 0;
     nTotal += gw * prices.gw * exchangeInfo.rate;
     nTotal += iris * prices.iris * exchangeInfo.rate;
     nTotal += lotus * prices.lotus * exchangeInfo.rate;
     nTotal += cb * prices.cb * exchangeInfo.rate;
     nTotal += jasmine * prices.jasmine * exchangeInfo.rate;
     nTotal += sunflower * prices.sunflower * exchangeInfo.rate;
-    return total + nTotal.toFixed(2);
+    return exchangeInfo.symbol + total.toFixed(2);
 }
 
 process.stdin.setEncoding("utf8");
