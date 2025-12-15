@@ -131,6 +131,19 @@ app.post("/index", async (req, res) => {
     // Check if country is not supported or API error
     if (exchangeInfo.error) {
         const variables = {
+            usa: '',
+            uk: '',
+            japan: '',
+            india: '',
+            australia: '',
+            canada: '',
+            germany: '',
+            france: '',
+            spain: '',
+            italy: '',
+            china: '',
+            mexico: '',
+            brazil: '',
             gwPrice: `$${prices.gw}`,
             irisPrice: `$${prices.iris}`,
             lotusPrice: `$${prices.lotus}`,
@@ -139,12 +152,27 @@ app.post("/index", async (req, res) => {
             sunflowerPrice: `$${prices.sunflower}`,
             errorMessage: `Error: ${exchangeInfo.error}. Showing prices in USD.`
         };
+        variables.country = "selected";
         res.render("index", variables);
         return;
     }
     
     // Convert prices to local currency
+    variables.country = "selected";
     const variables = {
+        usa: '',
+        uk: '',
+        japan: '',
+        india: '',
+        australia: '',
+        canada: '',
+        germany: '',
+        france: '',
+        spain: '',
+        italy: '',
+        china: '',
+        mexico: '',
+        brazil: '',
         gwPrice: `${exchangeInfo.symbol}${(prices.gw * exchangeInfo.rate).toFixed(2)}`,
         irisPrice: `${exchangeInfo.symbol}${(prices.iris * exchangeInfo.rate).toFixed(2)}`,
         lotusPrice: `${exchangeInfo.symbol}${(prices.lotus * exchangeInfo.rate).toFixed(2)}`,
