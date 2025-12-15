@@ -87,12 +87,12 @@ async function getTotal(orders, country) {
     const exchangeInfo = await getExchangeRate(country);
     const {gw, iris, lotus, cb, jasmine, sunflower} = orders;
     let total = 0;
-    nTotal += gw * prices.gw * exchangeInfo.rate;
-    nTotal += iris * prices.iris * exchangeInfo.rate;
-    nTotal += lotus * prices.lotus * exchangeInfo.rate;
-    nTotal += cb * prices.cb * exchangeInfo.rate;
-    nTotal += jasmine * prices.jasmine * exchangeInfo.rate;
-    nTotal += sunflower * prices.sunflower * exchangeInfo.rate;
+    total += gw * prices.gw * exchangeInfo.rate;
+    total += iris * prices.iris * exchangeInfo.rate;
+    total += lotus * prices.lotus * exchangeInfo.rate;
+    total += cb * prices.cb * exchangeInfo.rate;
+    total += jasmine * prices.jasmine * exchangeInfo.rate;
+    total += sunflower * prices.sunflower * exchangeInfo.rate;
     return exchangeInfo.symbol + total.toFixed(2);
 }
 
