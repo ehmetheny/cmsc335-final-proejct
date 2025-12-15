@@ -112,6 +112,19 @@ app.get("/", (req, res) => {
 
 app.get("/index", (req, res) => { 
     const variables = {
+        usa: "selected",
+        uk: '',
+        japan: '',
+        india: '',
+        australia: '',
+        canada: '',
+        germany: '',
+        france: '',
+        spain: '',
+        italy: '',
+        china: '',
+        mexico: '',
+        brazil: '',
         gwPrice: `$${prices.gw}`,
         irisPrice: `$${prices.iris}`,
         lotusPrice: `$${prices.lotus}`,
