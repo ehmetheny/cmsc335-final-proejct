@@ -114,6 +114,10 @@ td strong {
     width: 97%;
 }
 
+#order-form select {
+    width: 99%;
+}
+
 #flowers {
     width: 100%;
     table-layout: fixed;
