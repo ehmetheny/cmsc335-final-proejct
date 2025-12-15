@@ -137,13 +137,14 @@ app.get("/index", (req, res) => {
 
 app.post("/index", async (req, res) => { 
     let country = req.body.country;
+    let variables;
     
     // Get exchange rate for the selected country
     const exchangeInfo = await getExchangeRate(country);
 
     // Check if country is not supported or API error
     if (exchangeInfo.error) {
-        const variables = {
+        variables = {
             usa: '',
             uk: '',
             japan: '',
@@ -165,36 +166,32 @@ app.post("/index", async (req, res) => {
             sunflowerPrice: `$${prices.sunflower}`,
             errorMessage: `Error: ${exchangeInfo.error}. Showing prices in USD.`
         };
-        country = country.toLowerCase();
-        variables.country = "selected";
-        res.render("index", variables);
-        return;
+    } else {
+        // Convert prices to local currency
+        variables = {
+            usa: '',
+            uk: '',
+            japan: '',
+            india: '',
+            australia: '',
+            canada: '',
+            germany: '',
+            france: '',
+            spain: '',
+            italy: '',
+            china: '',
+            mexico: '',
+            brazil: '',
+            gwPrice: `${exchangeInfo.symbol}${(prices.gw * exchangeInfo.rate).toFixed(2)}`,
+            irisPrice: `${exchangeInfo.symbol}${(prices.iris * exchangeInfo.rate).toFixed(2)}`,
+            lotusPrice: `${exchangeInfo.symbol}${(prices.lotus * exchangeInfo.rate).toFixed(2)}`,
+            cbPrice: `${exchangeInfo.symbol}${(prices.cb * exchangeInfo.rate).toFixed(2)}`,
+            jasminePrice: `${exchangeInfo.symbol}${(prices.jasmine * exchangeInfo.rate).toFixed(2)}`,
+            sunflowerPrice: `${exchangeInfo.symbol}${(prices.sunflower * exchangeInfo.rate).toFixed(2)}`
+        };
     }
-    
-    // Convert prices to local currency
-    const variables = {
-        usa: '',
-        uk: '',
-        japan: '',
-        india: '',
-        australia: '',
-        canada: '',
-        germany: '',
-        france: '',
-        spain: '',
-        italy: '',
-        china: '',
-        mexico: '',
-        brazil: '',
-        gwPrice: `${exchangeInfo.symbol}${(prices.gw * exchangeInfo.rate).toFixed(2)}`,
-        irisPrice: `${exchangeInfo.symbol}${(prices.iris * exchangeInfo.rate).toFixed(2)}`,
-        lotusPrice: `${exchangeInfo.symbol}${(prices.lotus * exchangeInfo.rate).toFixed(2)}`,
-        cbPrice: `${exchangeInfo.symbol}${(prices.cb * exchangeInfo.rate).toFixed(2)}`,
-        jasminePrice: `${exchangeInfo.symbol}${(prices.jasmine * exchangeInfo.rate).toFixed(2)}`,
-        sunflowerPrice: `${exchangeInfo.symbol}${(prices.sunflower * exchangeInfo.rate).toFixed(2)}`
-    };
     country = country.toLowerCase();
-    variables.country = "selected";
+    variables[country] = "selected";
     res.render("index", variables);
 }); 
 
