@@ -171,7 +171,6 @@ app.post("/index", async (req, res) => {
     }
     
     // Convert prices to local currency
-    variables.country = "selected";
     const variables = {
         usa: '',
         uk: '',
@@ -193,6 +192,7 @@ app.post("/index", async (req, res) => {
         jasminePrice: `${exchangeInfo.symbol}${(prices.jasmine * exchangeInfo.rate).toFixed(2)}`,
         sunflowerPrice: `${exchangeInfo.symbol}${(prices.sunflower * exchangeInfo.rate).toFixed(2)}`
     };
+    variables.country = "selected";
     res.render("index", variables);
 }); 
 
