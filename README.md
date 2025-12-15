@@ -1,4 +1,4 @@
-**Submitted by:** 
+**Submitted by:** Mutsawashe "MJ" Mlambo (mmlambo)
 
 **Group Members:** Erica Metheny (emetheny), Gavin Harmon (gdharmon), Mutsawashe "MJ" Mlambo (mmlambo), Dandy Kitil (dkitil)
 
