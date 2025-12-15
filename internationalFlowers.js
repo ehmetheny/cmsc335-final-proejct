@@ -221,7 +221,7 @@ app.post("/buy", async (req, res) => {
         };
          await client.connect();
          const order = { 
-            date: new Date().toLocaleString(),
+            date: new Date(),
             email: variables.email,
             phone: variables.phone,
             name: variables.name,
@@ -248,7 +248,7 @@ app.post("/buy", async (req, res) => {
 app.get("/orders", async (req, res) => { 
     try {
         await client.connect();
-        const docs = await collection.find().toArray();
+        const docs = await collection.find().sort({ date: -1 }).toArray();
         let tableBody = "";
 
         // please dont change html style :)
@@ -259,7 +259,7 @@ app.get("/orders", async (req, res) => {
                             cb: order.cb, 
                             jasmine: order.jasmine, 
                             sunflower: order.sunflower};
-            tableBody += `<tr><td>DATE<strong>${order.date}</strong></td></tr>`;
+            tableBody += `<tr><td>DATE<strong>${order.date.toLocaleString()}</strong></td></tr>`;
             tableBody += `<tr><td>E-MAIL ADDRESS<strong>${order.email}</strong></td></tr>`;
             tableBody += `<tr><td>PHONE NUMBER<strong>${order.phone}</strong></td></tr>`;
             tableBody += `<tr><td>NAME<strong>${order.name}</strong></td></tr>`;
