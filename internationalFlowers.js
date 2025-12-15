@@ -94,7 +94,7 @@ async function getTotal(orders, country) {
     nTotal += cb * prices.cb * exchangeInfo.rate;
     nTotal += jasmine * prices.jasmine * exchangeInfo.rate;
     nTotal += sunflower * prices.sunflower * exchangeInfo.rate;
-    return total + nTotal;
+    return total + nTotal.toFixed(2);
 }
 
 process.stdin.setEncoding("utf8");
