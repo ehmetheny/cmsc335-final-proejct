@@ -1,16 +1,14 @@
 // require("dotenv").config({ quiet: true });
-const { MongoClient, ServerApiVersion } = require("mongodb");
 const express = require("express");
-const app = express(); 
+const app = express();
 const path = require("path");
+const checkOrders = require("./routes/checkOrders");
 const bodyParser = require("body-parser");
 const { StringDecoder } = require("string_decoder");
 const portNumber = 5001;
-const uri = process.env.MONGO_CONNECTION_STRING;
-const client = new MongoClient(uri, { serverApi: ServerApiVersion.v1 });
-const database = client.db("CMSC335DB");
-const collection = database.collection("flowerOrders");
-const prices = {gw: 10, iris: 12, lotus: 5, cb: 18, jasmine: 22, sunflower: 8};
+const mongoose = require("mongoose");
+const Order = require("./model/Order.js");
+const prices = { gw: 10, iris: 12, lotus: 5, cb: 18, jasmine: 22, sunflower: 8 };
 const countryCurrencies = {
     'USA': 'USD',
     'UK': 'GBP',
@@ -30,19 +28,19 @@ const countryCurrencies = {
 async function getExchangeRate(country) {
     try {
         const currency = countryCurrencies[country];
-        
+
         if (!currency) {
             throw new Error(`Country "${country}" not supported`);
         }
-        
+
         const response = await fetch(`https://api.exchangerate-api.com/v4/latest/USD`);
-        
+
         if (!response.ok) {
             throw new Error('Failed to fetch exchange rates');
         }
-        
+
         const data = await response.json();
-        
+
         return {
             rate: data.rates[currency] || 1,
             currency: currency,
@@ -71,7 +69,7 @@ function getCurrencySymbol(currency) {
 }
 
 function getFlowers(orders) {
-    const {gw, iris, lotus, cb, jasmine, sunflower} = orders;
+    const { gw, iris, lotus, cb, jasmine, sunflower } = orders;
     let flowers = [];
     if (gw != 0) flowers.push(`Golden Wattle (${gw}x)`);
     if (iris != 0) flowers.push(`Iris (${iris}x)`);
@@ -85,7 +83,7 @@ function getFlowers(orders) {
 
 async function getTotal(orders, country) {
     const exchangeInfo = await getExchangeRate(country);
-    const {gw, iris, lotus, cb, jasmine, sunflower} = orders;
+    const { gw, iris, lotus, cb, jasmine, sunflower } = orders;
     let total = 0;
     total += gw * prices.gw * exchangeInfo.rate;
     total += iris * prices.iris * exchangeInfo.rate;
@@ -98,18 +96,20 @@ async function getTotal(orders, country) {
 
 process.stdin.setEncoding("utf8");
 
-app.use(bodyParser.urlencoded( { extended: false } ));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.resolve(__dirname)));
 
 
 app.set("view engine", "ejs");
 app.set("views", path.resolve(__dirname, "templates"));
 
-app.get("/", (req, res) => { 
-    res.redirect("/index");
-}); 
+app.use("/orders", checkOrders);
 
-app.get("/index", (req, res) => { 
+app.get("/", (req, res) => {
+    res.redirect("/index");
+});
+
+app.get("/index", (req, res) => {
     const variables = {
         usa: 'selected',
         uk: '',
@@ -132,12 +132,12 @@ app.get("/index", (req, res) => {
         sunflowerPrice: `$${prices.sunflower}`
     };
     res.render("index", variables);
-}); 
+});
 
-app.post("/index", async (req, res) => { 
+app.post("/index", async (req, res) => {
     let country = req.body.country;
     let variables;
-    
+
     // Get exchange rate for the selected country
     const exchangeInfo = await getExchangeRate(country);
 
@@ -192,89 +192,64 @@ app.post("/index", async (req, res) => {
     country = country.toLowerCase();
     variables[country] = "selected";
     res.render("index", variables);
-}); 
+});
 
-// Buy page - shows order form
 app.get("/buy", async (req, res) => {
     res.render("buy");
 });
 
-app.post("/buy", async (req, res) => { 
-    try {
-        const orders = {gw: req.body.gwOrder, 
-                        iris: req.body.irisOrder, 
-                        lotus: req.body.lotusOrder, 
-                        cb: req.body.cbOrder, 
-                        jasmine: req.body.jasmineOrder, 
-                        sunflower: req.body.sunflowerOrder};
-        const country = req.body.country;
-        const total = await getTotal(orders, country);
-        const variables = {
-            email: req.body.email,
-            phone: req.body.phone,
-            name: req.body.name,
-            address: req.body.address,
-            country: country,
-            flowers: getFlowers(orders),
-            total: total
-        };
-         await client.connect();
-         const order = { 
-            date: new Date(),
-            email: variables.email,
-            phone: variables.phone,
-            name: variables.name,
-            address: variables.address,
-            country: country,
-            gw: orders.gw, 
-            iris: orders.iris, 
-            lotus: orders.lotus, 
-            cb: orders.cb, 
-            jasmine: orders.jasmine, 
-            sunflower: orders.sunflower,
-            total: total 
-        };
+app.post("/buy", async (req, res) => {
+        (async () => {
+            try {
+                const orders = {
+                    gw: req.body.gwOrder,
+                    iris: req.body.irisOrder,
+                    lotus: req.body.lotusOrder,
+                    cb: req.body.cbOrder,
+                    jasmine: req.body.jasmineOrder,
+                    sunflower: req.body.sunflowerOrder
+                };
+                const country = req.body.country;
+                const total = await getTotal(orders, country);
+                const variables = {
+                    email: req.body.email,
+                    phone: req.body.phone,
+                    name: req.body.name,
+                    address: req.body.address,
+                    country: country,
+                    flowers: getFlowers(orders),
+                    total: total
+                };
 
-        await collection.insertOne(order);
-        res.render("orderConfirmation", variables);
-    } catch (e) {
-        console.error("Error in /buy post:", e);
-    } finally {
-        await client.close();
-    }
+                await mongoose.connect(process.env.MONGO_CONNECTION_STRING, { dbName: 'CMSC335DB' });
+                await Order.create({
+                    date: new Date(),
+                    email: variables.email,
+                    phone: variables.phone,
+                    name: variables.name,
+                    address: variables.address,
+                    country: country,
+                    gw: orders.gw,
+                    iris: orders.iris,
+                    lotus: orders.lotus,
+                    cb: orders.cb,
+                    jasmine: orders.jasmine,
+                    sunflower: orders.sunflower,
+                    total: total
+                });
+
+                res.render("orderConfirmation", variables);
+
+            } catch (err) {
+                console.error("Error in /buy post:", e);
+            } finally {
+                mongoose.disconnect();
+            }
+        })();
 });
 
-app.get("/orders", async (req, res) => { 
-    try {
-        await client.connect();
-        const docs = await collection.find().sort({ date: -1 }).toArray();
-        let tableBody = "";
+module.exports = { getFlowers };
 
-        // please dont change html style :)
-        docs.forEach((order) => {
-             const orders = {gw: order.gw, 
-                            iris: order.iris, 
-                            lotus: order.lotus, 
-                            cb: order.cb, 
-                            jasmine: order.jasmine, 
-                            sunflower: order.sunflower};
-            tableBody += `<tr><td>DATE<strong>${order.date.toLocaleString()}</strong></td></tr>`;
-            tableBody += `<tr><td>E-MAIL ADDRESS<strong>${order.email}</strong></td></tr>`;
-            tableBody += `<tr><td>PHONE NUMBER<strong>${order.phone}</strong></td></tr>`;
-            tableBody += `<tr><td>NAME<strong>${order.name}</strong></td></tr>`;
-            tableBody += `<tr><td>ADDRESS<strong>${order.address}</strong></td></tr>`;
-            tableBody += `<tr><td>COUNTRY<strong>${order.country}</strong></td></tr>`;
-            tableBody += `<tr><td>FLOWERS<strong>${getFlowers(orders)}</strong></td></tr>`;
-            tableBody += `<tr><td>TOTAL<strong>${order.total}</strong></td></tr>`;
-            tableBody += `<tr class="space"><td></td></tr>`;
-        });
-        res.render("orders", { tbody: tableBody });
-    } catch (e) {
-        console.error("Error in /orders get:", e);
-    } finally {
-        await client.close();
-    }
-});
 
 app.listen(portNumber);
 console.log(`Web server started and running at http://localhost:${portNumber}`);
