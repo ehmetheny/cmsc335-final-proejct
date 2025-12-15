@@ -1,6 +1,6 @@
-**Submitted by:** Mutsawashe "MJ" Mlambo (mmlambo)
+**Submitted by:** Mutsawashe Mlambo (mmlambo)
 
-**Group Members:** Erica Metheny (emetheny), Gavin Harmon (gdharmon), Mutsawashe "MJ" Mlambo (mmlambo), Dandy Kitil (dkitil)
+**Group Members:** Erica Metheny (emetheny), Gavin Harmon (gdharmon), Mutsawashe Mlambo (mmlambo), Dandy Kitil (dkitil)
 
 **App Description:**  Allows users to place orders for flowers, see past orders, and see flower prices in different currencies.
 
